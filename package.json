@@ -20,6 +20,38 @@
         "command": "textMate3.helloWorld",
         "title": "TextMate3: Hello World",
         "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.macros.toggleRecord",
+        "title": "TextMate3: Toggle Macro Recording",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.macros.replay",
+        "title": "TextMate3: Replay Last Macro",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.macros.saveAs",
+        "title": "TextMate3: Save Current Macro As…",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.macros.loadNamed",
+        "title": "TextMate3: Load Named Macro…",
+        "category": "TextMate3"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "textMate3.macros.toggleRecord",
+        "key": "cmd+alt+m",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "textMate3.macros.replay",
+        "key": "cmd+shift+m",
+        "when": "editorTextFocus"
       }
     ],
     "configuration": {
@@ -29,6 +61,18 @@
           "type": "string",
           "default": "Hello",
           "description": "Greeting used by the TextMate3: Hello World command."
+        },
+        "textMate3.macros.maxEvents": {
+          "type": "number",
+          "default": 10000,
+          "minimum": 100,
+          "maximum": 100000,
+          "description": "Maximum number of recorded events before macro recording auto-stops."
+        },
+        "textMate3.macros.filterMouseSelection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Drop mouse-driven selection changes from macro recordings."
         }
       }
     },
