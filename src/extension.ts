@@ -141,6 +141,71 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand("textMate3.macros.saveAs", async () => {
+      if (!storage) {
+        return;
+      }
+      const macro = storage.getCurrent();
+      if (!macro || macro.events.length === 0) {
+        void vscode.window.showInformationMessage("No current macro to save.");
+        return;
+      }
+      const name = await vscode.window.showInputBox({
+        prompt: "Macro name",
+        placeHolder: "e.g. wrap-with-todo",
+        validateInput: (value) =>
+          value.trim().length === 0 ? "Name must not be empty." : undefined,
+      });
+      if (name === undefined) {
+        return;
+      }
+      const trimmed = name.trim();
+      if (storage.hasNamed(trimmed)) {
+        const choice = await vscode.window.showInformationMessage(
+          `A macro named "${trimmed}" already exists. Overwrite?`,
+          { modal: true },
+          "Overwrite",
+        );
+        if (choice !== "Overwrite") {
+          return;
+        }
+      }
+      await storage.saveNamed(trimmed, macro);
+      void vscode.window.showInformationMessage(
+        `Saved macro "${trimmed}" (${macro.events.length} events).`,
+      );
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("textMate3.macros.loadNamed", async () => {
+      if (!storage) {
+        return;
+      }
+      const names = storage.listNamed();
+      if (names.length === 0) {
+        void vscode.window.showInformationMessage("No saved macros.");
+        return;
+      }
+      const picked = await vscode.window.showQuickPick(names, {
+        placeHolder: "Pick a macro to make current",
+      });
+      if (picked === undefined) {
+        return;
+      }
+      const macro = storage.getNamed(picked);
+      if (!macro) {
+        void vscode.window.showWarningMessage(
+          `Macro "${picked}" could not be loaded (storage validation failed).`,
+        );
+        return;
+      }
+      await storage.setCurrent(macro);
+      void vscode.window.showInformationMessage(`Loaded "${picked}" as current macro.`);
+    }),
+  );
+
+  context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor((editor) => {
       if (currentRecorder && editor !== currentRecorder.targetEditor) {
         finishRecording("editorSwitch");
