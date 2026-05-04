@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 import { Recorder, RecorderConfig } from "./macros/recorder";
-import { PersistedMacro } from "./macros/types";
+import { MacroStorage } from "./macros/storage";
 
 let currentRecorder: Recorder | null = null;
-let lastMacro: PersistedMacro | null = null;
+let storage: MacroStorage | null = null;
 let statusBarItem: vscode.StatusBarItem | null = null;
 
 function readRecorderConfig(): RecorderConfig {
@@ -39,7 +39,9 @@ function finishRecording(reason: "toggle" | "cap" | "editorSwitch", capCount?: n
   const macro = currentRecorder.stop();
   currentRecorder = null;
   hideRecordingIndicator();
-  lastMacro = macro;
+  if (storage) {
+    void storage.setCurrent(macro);
+  }
 
   switch (reason) {
     case "toggle":
@@ -75,6 +77,8 @@ function startRecording(): void {
 }
 
 export function activate(context: vscode.ExtensionContext): void {
+  storage = new MacroStorage(context.globalState);
+
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   context.subscriptions.push(statusBarItem);
 
@@ -128,4 +132,5 @@ export function deactivate(): void {
   }
   hideRecordingIndicator();
   statusBarItem = null;
+  storage = null;
 }
