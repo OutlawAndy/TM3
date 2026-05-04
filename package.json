@@ -55,7 +55,7 @@
   "scripts": {
     "build": "node esbuild.config.mjs",
     "watch": "node esbuild.config.mjs --watch",
-    "package": "npm run build && vsce package",
+    "package": "npm run build && vsce package --allow-missing-repository --no-rewrite-relative-links",
     "vscode:prepublish": "npm run build",
     "typecheck": "tsc --noEmit"
   },
