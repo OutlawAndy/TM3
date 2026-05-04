@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/andy/CODE/editor-extension log --oneline -5)",
+      "Bash(npm install *)",
+      "Bash(npm run *)"
+    ],
+    "additionalDirectories": [
+      "/Users/andy/CODE/editor-extension/docs",
+      "/Users/andy/CODE/editor-extension"
+    ]
+  }
+}

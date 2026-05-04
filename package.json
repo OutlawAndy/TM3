@@ -1,0 +1,30 @@
+{
+  "name": "text-mate-3",
+  "displayName": "TextMate3",
+  "description": "Personal editor extension chassis: grammar tweaks, snippets, commands, and language features.",
+  "version": "0.0.1",
+  "publisher": "outlawandy",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {},
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch",
+    "package": "npm run build && vsce package",
+    "vscode:prepublish": "npm run build",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.24.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.0"
+  }
+}
