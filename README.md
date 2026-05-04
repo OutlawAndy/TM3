@@ -10,13 +10,14 @@ Personal VSCode extension chassis. A long-lived home for grammar tweaks, snippet
 - **Snippet** — type `hello` in Markdown or plaintext to expand "Hello, world!".
 - **Command** — `TextMate3: Hello World` in the palette; reads the `textMate3.greeting` setting.
 - **Hover provider** — placeholder hover on any Markdown text.
+- **Custom macros** — record and replay editor actions à la TextMate2, plus named slots that persist across reloads. See [Macros](#macros) below.
 
 ## Install
 
 ```bash
 npm ci
-npm run package         # produces text-mate-3-0.0.1.vsix
-code --install-extension text-mate-3-0.0.1.vsix
+npm run package         # produces text-mate-3-0.0.2.vsix
+code --install-extension text-mate-3-0.0.2.vsix
 ```
 
 To remove:
@@ -70,14 +71,41 @@ See the `HoverProvider` registration in [src/extension.ts](src/extension.ts).
 
 Read at runtime with `vscode.workspace.getConfiguration("textMate3").get<T>("key", default)`. Declare new settings under `contributes.configuration.properties` in [package.json](package.json) so they appear in the Settings UI and pick up types and defaults.
 
+## Macros
+
+A TextMate2-style record/replay feature with persistent named slots.
+
+### Commands
+
+| Command | Default keybinding | What it does |
+| --- | --- | --- |
+| `TextMate3: Toggle Macro Recording` | `Cmd+Option+M` | Starts recording on first press, stops on second. Status bar shows `● Recording macro` while active. |
+| `TextMate3: Replay Last Macro` | `Cmd+Shift+M` | Replays the current macro at the cursor as a single undoable edit. |
+| `TextMate3: Save Current Macro As…` | — | Prompts for a name and persists the current macro under it. Confirms before overwriting. |
+| `TextMate3: Load Named Macro…` | — | Quickpick of saved macros; copies the chosen one into the current slot so replay plays it. |
+
+### Persistence
+
+The current macro and all named macros are stored in VSCode's `globalState` (per-install, not per-workspace). They survive reloads and restarts. Recording in flight lives in extension memory until you stop — no I/O per keystroke — then is flushed in one write.
+
+### Recording scope and caveats
+
+- Captures everything that affects the **active text editor**: typed characters, command-driven edits, paste, cut. Switching editors mid-recording auto-stops with a warning.
+- Replay is **positional, not semantic**: it replays the same character changes at translated offsets, not the same commands. "Delete word right" recorded against one position replays as removing the same characters elsewhere.
+- Out-of-bounds replay edits (when the recorded offsets fall outside the target document) are skipped with a warning rather than crashing.
+- Mouse-driven selection changes are dropped from recordings by default. Toggle via the `textMate3.macros.filterMouseSelection` setting.
+- Recording auto-stops at `textMate3.macros.maxEvents` (default 10,000) to bound memory use.
+- No multi-cursor recording, no cross-document safety check on replay, and no management UI for named macros yet.
+
 ## Repo layout
 
 ```
 src/extension.ts          # activation entry: commands + providers
-syntaxes/                 # TextMate grammars
-snippets/                 # snippet files
-package.json              # manifest + contributions
-esbuild.config.mjs        # bundler
+src/macros/                # macro recorder, player, storage, types
+syntaxes/                  # TextMate grammars
+snippets/                  # snippet files
+package.json               # manifest + contributions
+esbuild.config.mjs         # bundler
 ```
 
 ## Notes
