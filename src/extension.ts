@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { Recorder, RecorderConfig } from "./macros/recorder";
 import { MacroStorage } from "./macros/storage";
+import { play } from "./macros/player";
 
 let currentRecorder: Recorder | null = null;
 let storage: MacroStorage | null = null;
@@ -97,6 +98,44 @@ export function activate(context: vscode.ExtensionContext): void {
         finishRecording("toggle");
       } else {
         startRecording();
+      }
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("textMate3.macros.replay", async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        void vscode.window.showInformationMessage("Open a text editor to replay a macro.");
+        return;
+      }
+      const macro = storage?.getCurrent() ?? null;
+      if (!macro) {
+        void vscode.window.showInformationMessage("No macro recorded yet.");
+        return;
+      }
+      if (macro.events.length === 0) {
+        void vscode.window.showInformationMessage("Recorded macro is empty.");
+        return;
+      }
+      const result = await play(editor, macro);
+      switch (result.kind) {
+        case "ok":
+          void vscode.window.showInformationMessage(
+            `Macro replayed (${result.appliedEdits} edits).`,
+          );
+          break;
+        case "empty":
+          void vscode.window.showInformationMessage("Recorded macro is empty.");
+          break;
+        case "out-of-bounds":
+          void vscode.window.showWarningMessage(
+            "Macro replay applied partial edits — some offsets fell outside the document.",
+          );
+          break;
+        case "edit-failed":
+          void vscode.window.showErrorMessage("Macro replay failed — try again.");
+          break;
       }
     }),
   );
