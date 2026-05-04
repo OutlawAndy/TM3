@@ -3,7 +3,8 @@
     "allow": [
       "Bash(git -C /Users/andy/CODE/editor-extension log --oneline -5)",
       "Bash(npm install *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npx --no-install vsce ls)"
     ],
     "additionalDirectories": [
       "/Users/andy/CODE/editor-extension/docs",

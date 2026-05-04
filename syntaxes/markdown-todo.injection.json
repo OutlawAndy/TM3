@@ -1,0 +1,10 @@
+{
+  "scopeName": "text.html.markdown.todo.injection",
+  "injectionSelector": "L:text.html.markdown -comment -string",
+  "patterns": [
+    {
+      "name": "keyword.todo.markdown",
+      "match": "\\b(TODO|FIXME|NOTE|HACK|XXX)\\b"
+    }
+  ]
+}

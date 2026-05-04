@@ -11,8 +11,47 @@
     "Other"
   ],
   "main": "./dist/extension.js",
-  "activationEvents": [],
-  "contributes": {},
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "textMate3.helloWorld",
+        "title": "TextMate3: Hello World",
+        "category": "TextMate3"
+      }
+    ],
+    "configuration": {
+      "title": "TextMate3",
+      "properties": {
+        "textMate3.greeting": {
+          "type": "string",
+          "default": "Hello",
+          "description": "Greeting used by the TextMate3: Hello World command."
+        }
+      }
+    },
+    "grammars": [
+      {
+        "scopeName": "text.html.markdown.todo.injection",
+        "path": "./syntaxes/markdown-todo.injection.json",
+        "injectTo": [
+          "text.html.markdown"
+        ]
+      }
+    ],
+    "snippets": [
+      {
+        "language": "markdown",
+        "path": "./snippets/example.code-snippets"
+      },
+      {
+        "language": "plaintext",
+        "path": "./snippets/example.code-snippets"
+      }
+    ]
+  },
   "scripts": {
     "build": "node esbuild.config.mjs",
     "watch": "node esbuild.config.mjs --watch",

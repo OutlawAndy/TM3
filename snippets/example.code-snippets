@@ -1,0 +1,10 @@
+{
+  "Hello World": {
+    "scope": "markdown,plaintext",
+    "prefix": "hello",
+    "body": [
+      "Hello, ${1:world}!"
+    ],
+    "description": "Example snippet from the TextMate3 scaffold."
+  }
+}
