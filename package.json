@@ -2,7 +2,7 @@
   "name": "text-mate-3",
   "displayName": "TextMate3",
   "description": "Personal editor extension chassis: grammar tweaks, snippets, commands, and language features.",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "publisher": "outlawandy",
   "engines": {
     "vscode": "^1.85.0"
@@ -79,6 +79,11 @@
       {
         "command": "textMate3.ruby.toggleArrayLiteral",
         "title": "TextMate3: Toggle Array Literal (%i/%w)",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.source.sortCollection",
+        "title": "TextMate3: Sort Collection",
         "category": "TextMate3"
       }
     ],

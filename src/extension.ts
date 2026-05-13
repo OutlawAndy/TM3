@@ -11,6 +11,7 @@ import {
   unwrapBraces,
   toggleBlockStyle,
   toggleArrayLiteral,
+  sortCollection,
 } from "./ruby/transforms";
 
 let currentRecorder: Recorder | null = null;
@@ -299,6 +300,11 @@ export function activate(context: vscode.ExtensionContext): void {
   registerTransform(
     "textMate3.ruby.toggleArrayLiteral",
     (t) => toggleArrayLiteral(t),
+    true,
+  );
+  registerTransform(
+    "textMate3.source.sortCollection",
+    (t) => sortCollection(t),
     true,
   );
 

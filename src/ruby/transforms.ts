@@ -256,6 +256,70 @@ export function toggleBlockStyle(str: string, tabStr: string = "  "): string {
 }
 
 // ---------------------------------------------------------------------------
+// R9 — Sort collection alphabetically (case-insensitive)
+// Handles: bracket array literals, %i/%w word literals, comma-separated text.
+// ---------------------------------------------------------------------------
+
+export function sortCollection(str: string): string {
+  const trimmed = str.trim();
+
+  // Bracket array: [ :foo, :bar ] or [ "foo", "bar" ]
+  if (trimmed.startsWith("[")) {
+    const m = trimmed.match(/^\[([\s\S]*)\]$/);
+    if (!m) return str;
+    const inner = m[1];
+    const items = inner
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (items.length === 0) return str;
+
+    const isSymbol = items.every((i) => i.startsWith(":"));
+    const isDoubleQuoted = items.every((i) => i.startsWith('"'));
+    const isSingleQuoted = items.every((i) => i.startsWith("'"));
+
+    const bare = items.map((i) => i.replace(/^[:"']|['"]\s*$/g, "").trim());
+    bare.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+
+    let sorted: string[];
+    if (isSymbol) {
+      sorted = bare.map((i) => `:${i}`);
+    } else if (isDoubleQuoted) {
+      sorted = bare.map((i) => `"${i}"`);
+    } else if (isSingleQuoted) {
+      sorted = bare.map((i) => `'${i}'`);
+    } else {
+      sorted = bare;
+    }
+
+    return `[ ${sorted.join(", ")} ]`;
+  }
+
+  // %i or %w word literal
+  if (/^%[iw]/i.test(trimmed)) {
+    const isSymbol = trimmed[1] === "i";
+    const m = trimmed.match(/^%[iw][\(\[\|<]([\s\S]*)[\)\]\|>]\s*$/i);
+    if (!m) return str;
+    const items = m[1].trim().split(/\s+/).filter(Boolean);
+    if (items.length === 0) return str;
+    items.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+    const delimiter = isSymbol ? "%i" : "%w";
+    const open = trimmed[2];
+    const close = open === "(" ? ")" : open === "[" ? "]" : open === "<" ? ">" : open;
+    return `${delimiter}${open} ${items.join(" ")} ${close}`;
+  }
+
+  // Comma-separated fallback
+  if (str.includes(",")) {
+    const items = str.split(",").map((s) => s.trim()).filter(Boolean);
+    items.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+    return items.join(", ");
+  }
+
+  return str;
+}
+
+// ---------------------------------------------------------------------------
 // R8 — Array literal toggle: [ :foo, :bar ] ↔ %i( foo bar )
 //                             [ "foo", "bar" ] ↔ %w( foo bar )
 // Ported from TextMate Rangular bundle: %i( syms ).tmCommand
