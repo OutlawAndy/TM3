@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.4 — 2026-05-13
+
+`TextMate3: Sort Collection` — alphabetically sorts the items in a selected collection, case-insensitively. Supports:
+
+- Ruby bracket array literals (`[:foo, :bar]`, `["foo", "bar"]`, `['foo', 'bar']`)
+- `%i()` and `%w()` word-list literals
+- Bare comma-separated text as a fallback
+
+No keybinding is declared by default. Available in any file type via the Command Palette.
+
 ## 0.0.3 — 2026-05-13
 
 Eight text-transform commands ported from the TextMate Ruby and Source bundles.

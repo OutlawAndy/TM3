@@ -16,8 +16,8 @@ Personal VSCode extension chassis. A long-lived home for grammar tweaks, snippet
 
 ```bash
 npm ci
-npm run package         # produces text-mate-3-0.0.2.vsix
-code --install-extension text-mate-3-0.0.2.vsix
+npm run package         # produces text-mate-3-0.0.4.vsix
+code --install-extension text-mate-3-0.0.4.vsix
 ```
 
 To remove:
@@ -92,6 +92,7 @@ Text-manipulation commands ported from the TextMate Ruby and Source bundles. All
 | --- | --- | --- |
 | `TextMate3: Wrap in Braces` | — | Single-line selection → `{selection}`; multi-line selection → `{\n<indented content>\n}`. Respects editor tab settings. **Requires a selection.** |
 | `TextMate3: Unwrap Braces` | — | Removes surrounding `{…}` from a selection and unindents content by one level. **Requires a selection.** |
+| `TextMate3: Sort Collection` | — | Sorts items alphabetically (case-insensitive) in bracket arrays (`[:b, :a]`), `%i()`/`%w()` literals, or bare comma-separated text. **Requires a selection.** |
 
 > **Note on Wrap / Unwrap keybindings:** The TextMate originals used bare `{` / `}` keys when text was selected. In VSCode this would intercept normal typing, so no default keybinding is declared. Add your own via **Preferences → Keyboard Shortcuts** if desired.
 
