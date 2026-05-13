@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.0.3 — 2026-05-13
+
+Eight text-transform commands ported from the TextMate Ruby and Source bundles.
+
+**Ruby commands** (keybindings active only in Ruby files):
+
+- `TextMate3: Toggle Ruby Hash Syntax` — cycles between rocket (`{ :key => val }`) and new (`{ key: val }`) hash syntax.
+- `TextMate3: Toggle String/Symbol` — converts `"word"` / `'word'` ↔ `:word`.
+- `TextMate3: Toggle Quote Style` (`Ctrl+"`) — three-way cycle `"…"` → `'…'` → `%Q{…}` → `"…"` with proper escape handling; also handles backtick / `%x{}` shell strings.
+- `TextMate3: Toggle camelCase / snake_case` — three-way case cycle `PascalCase` → `snake_case` → `camelCase` → `PascalCase`.
+- `TextMate3: Toggle Block Style` (`Ctrl+Shift+[`) — toggles a selected Ruby block between `{ … }` and `do … end` forms.
+- `TextMate3: Toggle Array Literal (%i/%w)` (`Ctrl+Cmd+\`) — toggles between bracket array literals and `%i()`/`%w()` literals.
+
+**Source commands** (active in any file):
+
+- `TextMate3: Wrap in Braces` — wraps selection in `{…}`, multi-line-aware.
+- `TextMate3: Unwrap Braces` — removes surrounding `{…}` from a selection.
+
 ## 0.0.2 — 2026-05-04
 
 TextMate2-style custom macros with persistent named slots.
