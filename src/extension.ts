@@ -2,6 +2,16 @@ import * as vscode from "vscode";
 import { Recorder, RecorderConfig } from "./macros/recorder";
 import { MacroStorage } from "./macros/storage";
 import { play } from "./macros/player";
+import {
+  toggleHashSyntax,
+  toggleStringSymbol,
+  toggleQuoteStyle,
+  toggleCamelSnake,
+  wrapInBraces,
+  unwrapBraces,
+  toggleBlockStyle,
+  toggleArrayLiteral,
+} from "./ruby/transforms";
 
 let currentRecorder: Recorder | null = null;
 let storage: MacroStorage | null = null;
@@ -211,6 +221,85 @@ export function activate(context: vscode.ExtensionContext): void {
         finishRecording("editorSwitch");
       }
     }),
+  );
+
+  // --- Ruby / Source text-transform commands ---
+
+  function tabStr(editor: vscode.TextEditor): string {
+    const opts = editor.options;
+    if (opts.insertSpaces) {
+      return " ".repeat(typeof opts.tabSize === "number" ? opts.tabSize : 2);
+    }
+    return "\t";
+  }
+
+  function selectionOrLineRange(editor: vscode.TextEditor): vscode.Range {
+    return editor.selection.isEmpty
+      ? editor.document.lineAt(editor.selection.active).range
+      : editor.selection;
+  }
+
+  function registerTransform(
+    id: string,
+    transform: (text: string, tab: string) => string,
+    selectionRequired = false,
+  ): void {
+    context.subscriptions.push(
+      vscode.commands.registerCommand(id, async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) return;
+        if (selectionRequired && editor.selection.isEmpty) {
+          void vscode.window.showInformationMessage(
+            "Select the text to transform first.",
+          );
+          return;
+        }
+        const range = selectionRequired
+          ? editor.selection
+          : selectionOrLineRange(editor);
+        const text = editor.document.getText(range);
+        const result = transform(text, tabStr(editor));
+        if (result !== text) {
+          await editor.edit((b) => b.replace(range, result));
+        }
+      }),
+    );
+  }
+
+  // Selection-or-line commands (R1–R4)
+  registerTransform("textMate3.ruby.toggleHashSyntax", (t) =>
+    toggleHashSyntax(t),
+  );
+  registerTransform("textMate3.ruby.toggleStringSymbol", (t) =>
+    toggleStringSymbol(t),
+  );
+  registerTransform("textMate3.ruby.toggleQuoteStyle", (t) =>
+    toggleQuoteStyle(t),
+  );
+  registerTransform("textMate3.ruby.toggleCamelSnake", (t) =>
+    toggleCamelSnake(t),
+  );
+
+  // Selection-required commands (R5–R8)
+  registerTransform(
+    "textMate3.source.wrapInBraces",
+    (t, tab) => wrapInBraces(t, tab),
+    true,
+  );
+  registerTransform(
+    "textMate3.source.unwrapBraces",
+    (t, tab) => unwrapBraces(t, tab),
+    true,
+  );
+  registerTransform(
+    "textMate3.ruby.toggleBlockStyle",
+    (t, tab) => toggleBlockStyle(t, tab),
+    true,
+  );
+  registerTransform(
+    "textMate3.ruby.toggleArrayLiteral",
+    (t) => toggleArrayLiteral(t),
+    true,
   );
 
   context.subscriptions.push(

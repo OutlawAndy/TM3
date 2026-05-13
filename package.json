@@ -40,6 +40,46 @@
         "command": "textMate3.macros.loadNamed",
         "title": "TextMate3: Load Named Macro…",
         "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.ruby.toggleHashSyntax",
+        "title": "TextMate3: Toggle Ruby Hash Syntax",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.ruby.toggleStringSymbol",
+        "title": "TextMate3: Toggle String/Symbol",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.ruby.toggleQuoteStyle",
+        "title": "TextMate3: Toggle Quote Style",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.ruby.toggleCamelSnake",
+        "title": "TextMate3: Toggle camelCase / snake_case",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.source.wrapInBraces",
+        "title": "TextMate3: Wrap in Braces",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.source.unwrapBraces",
+        "title": "TextMate3: Unwrap Braces",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.ruby.toggleBlockStyle",
+        "title": "TextMate3: Toggle Block Style (do…end / { })",
+        "category": "TextMate3"
+      },
+      {
+        "command": "textMate3.ruby.toggleArrayLiteral",
+        "title": "TextMate3: Toggle Array Literal (%i/%w)",
+        "category": "TextMate3"
       }
     ],
     "keybindings": [
@@ -52,6 +92,21 @@
         "command": "textMate3.macros.replay",
         "key": "cmd+shift+m",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "textMate3.ruby.toggleQuoteStyle",
+        "key": "ctrl+\"",
+        "when": "editorTextFocus && editorLangId == 'ruby'"
+      },
+      {
+        "command": "textMate3.ruby.toggleBlockStyle",
+        "key": "ctrl+shift+[",
+        "when": "editorTextFocus && editorHasSelection && editorLangId == 'ruby'"
+      },
+      {
+        "command": "textMate3.ruby.toggleArrayLiteral",
+        "key": "ctrl+cmd+\\",
+        "when": "editorTextFocus && editorHasSelection && editorLangId == 'ruby'"
       }
     ],
     "configuration": {
