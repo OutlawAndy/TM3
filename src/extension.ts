@@ -234,10 +234,53 @@ export function activate(context: vscode.ExtensionContext): void {
     return "\t";
   }
 
-  function selectionOrLineRange(editor: vscode.TextEditor): vscode.Range {
-    return editor.selection.isEmpty
-      ? editor.document.lineAt(editor.selection.active).range
-      : editor.selection;
+  // Iteratively expands selection from the cursor using VSCode's grammar-aware
+  // smart-select until `transform` produces a change. Returns the matching range,
+  // or null if no expansion (up to maxExpansions) yields one.
+  async function findTransformScope(
+    editor: vscode.TextEditor,
+    apply: (text: string) => string,
+    maxExpansions = 5,
+  ): Promise<vscode.Range | null> {
+    if (!editor.selection.isEmpty) {
+      return editor.selection;
+    }
+
+    const cursorPos = editor.selection.active;
+
+    // Try the word at cursor first — permissive regex covers :symbol, @ivar, snake_case.
+    const wordRange = editor.document.getWordRangeAtPosition(
+      cursorPos,
+      /[:@$]?[A-Za-z_][A-Za-z0-9_]*/,
+    );
+    if (wordRange) {
+      const wordText = editor.document.getText(wordRange);
+      if (apply(wordText) !== wordText) {
+        return wordRange;
+      }
+    }
+
+    // Ensure smart-select starts from the bare cursor, not the word range we just probed.
+    editor.selection = new vscode.Selection(cursorPos, cursorPos);
+
+    let lastRange: vscode.Range = editor.selection;
+    for (let i = 0; i < maxExpansions; i++) {
+      await vscode.commands.executeCommand("editor.action.smartSelect.expand");
+      const expanded = editor.selection;
+      if (expanded.isEqual(lastRange)) {
+        // smart-select didn't move; give up.
+        break;
+      }
+      lastRange = expanded;
+      const text = editor.document.getText(expanded);
+      if (apply(text) !== text) {
+        return expanded;
+      }
+    }
+
+    // No scope matched — restore cursor.
+    editor.selection = new vscode.Selection(cursorPos, cursorPos);
+    return null;
   }
 
   function registerTransform(
@@ -255,11 +298,16 @@ export function activate(context: vscode.ExtensionContext): void {
           );
           return;
         }
-        const range = selectionRequired
-          ? editor.selection
-          : selectionOrLineRange(editor);
+        const tab = tabStr(editor);
+        const range = await findTransformScope(editor, (t) => transform(t, tab));
+        if (!range) {
+          void vscode.window.showInformationMessage(
+            "Could not find a matching scope at the cursor — try making a selection.",
+          );
+          return;
+        }
         const text = editor.document.getText(range);
-        const result = transform(text, tabStr(editor));
+        const result = transform(text, tab);
         if (result !== text) {
           await editor.edit((b) => b.replace(range, result));
         }
@@ -281,31 +329,23 @@ export function activate(context: vscode.ExtensionContext): void {
     toggleCamelSnake(t),
   );
 
-  // Selection-required commands (R5–R8)
+  // wrapInBraces still requires a selection — there's nothing meaningful to wrap otherwise.
   registerTransform(
     "textMate3.source.wrapInBraces",
     (t, tab) => wrapInBraces(t, tab),
     true,
   );
-  registerTransform(
-    "textMate3.source.unwrapBraces",
-    (t, tab) => unwrapBraces(t, tab),
-    true,
+  registerTransform("textMate3.source.unwrapBraces", (t, tab) =>
+    unwrapBraces(t, tab),
   );
-  registerTransform(
-    "textMate3.ruby.toggleBlockStyle",
-    (t, tab) => toggleBlockStyle(t, tab),
-    true,
+  registerTransform("textMate3.ruby.toggleBlockStyle", (t, tab) =>
+    toggleBlockStyle(t, tab),
   );
-  registerTransform(
-    "textMate3.ruby.toggleArrayLiteral",
-    (t) => toggleArrayLiteral(t),
-    true,
+  registerTransform("textMate3.ruby.toggleArrayLiteral", (t) =>
+    toggleArrayLiteral(t),
   );
-  registerTransform(
-    "textMate3.source.sortCollection",
-    (t) => sortCollection(t),
-    true,
+  registerTransform("textMate3.source.sortCollection", (t) =>
+    sortCollection(t),
   );
 
   context.subscriptions.push(

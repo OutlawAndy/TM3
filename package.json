@@ -2,7 +2,7 @@
   "name": "text-mate-3",
   "displayName": "TextMate3",
   "description": "Personal editor extension chassis: grammar tweaks, snippets, commands, and language features.",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "publisher": "outlawandy",
   "engines": {
     "vscode": "^1.85.0"
@@ -106,12 +106,12 @@
       {
         "command": "textMate3.ruby.toggleBlockStyle",
         "key": "ctrl+shift+[",
-        "when": "editorTextFocus && editorHasSelection && editorLangId == 'ruby'"
+        "when": "editorTextFocus && editorLangId == 'ruby'"
       },
       {
         "command": "textMate3.ruby.toggleArrayLiteral",
         "key": "ctrl+cmd+\\",
-        "when": "editorTextFocus && editorHasSelection && editorLangId == 'ruby'"
+        "when": "editorTextFocus && editorLangId == 'ruby'"
       }
     ],
     "configuration": {

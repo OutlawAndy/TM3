@@ -16,8 +16,8 @@ Personal VSCode extension chassis. A long-lived home for grammar tweaks, snippet
 
 ```bash
 npm ci
-npm run package         # produces text-mate-3-0.0.4.vsix
-code --install-extension text-mate-3-0.0.4.vsix
+npm run package         # produces text-mate-3-0.0.5.vsix
+code --install-extension text-mate-3-0.0.5.vsix
 ```
 
 To remove:
@@ -73,7 +73,7 @@ Read at runtime with `vscode.workspace.getConfiguration("textMate3").get<T>("key
 
 ## Ruby & Source text transforms
 
-Text-manipulation commands ported from the TextMate Ruby and Source bundles. All transforms operate on the current **selection**; commands marked "selection or line" fall back to the whole current line when nothing is selected.
+Text-manipulation commands ported from the TextMate Ruby and Source bundles. All transforms accept the current **selection** as input. When no selection exists, the transform auto-detects its scope by expanding from the cursor — word → string → bracketed expression — using VSCode's grammar-aware smart-select, and applies itself to the first scope that matches.
 
 ### Ruby commands (active only in Ruby files)
 
@@ -81,18 +81,18 @@ Text-manipulation commands ported from the TextMate Ruby and Source bundles. All
 | --- | --- | --- |
 | `TextMate3: Toggle Ruby Hash Syntax` | — | Cycles between rocket (`{ :key => val }`) and new (`{ key: val }`) hash syntax. |
 | `TextMate3: Toggle String/Symbol` | — | Converts `"word"` / `'word'` ↔ `:word`; replaces all matches in the selection. |
-| `TextMate3: Toggle Quote Style` | `Ctrl+"` | Three-way cycle: `"…"` → `'…'` → `%Q{…}` → `"…"`. Also handles esoteric `%q`, `%Q[]`, backtick, and `%x{}` forms with proper escape/unescape. Operates on selection or current scope token. |
+| `TextMate3: Toggle Quote Style` | `Ctrl+"` | Three-way cycle: `"…"` → `'…'` → `%Q{…}` → `"…"`. Also handles esoteric `%q`, `%Q[]`, backtick, and `%x{}` forms with proper escape/unescape. |
 | `TextMate3: Toggle camelCase / snake_case` | — | Three-way case cycle: `PascalCase` → `snake_case` → `camelCase` → `PascalCase`. Preserves leading non-letter prefix (e.g. `:`). |
-| `TextMate3: Toggle Block Style (do…end / { })` | `Ctrl+Shift+[` | Toggles a selected Ruby block between brace and keyword forms. Handles block parameters (`\|x\|`), single-line collapse, and multi-line expansion. **Requires a selection.** |
-| `TextMate3: Toggle Array Literal (%i/%w)` | `Ctrl+Cmd+\` | Toggles between `[:foo, :bar]` ↔ `%i( foo bar )` and `["foo", "bar"]` ↔ `%w( foo bar )`. Auto-detects symbol vs string content. **Requires a selection.** |
+| `TextMate3: Toggle Block Style (do…end / { })` | `Ctrl+Shift+[` | Toggles a Ruby block between brace and keyword forms. Handles block parameters (`\|x\|`), single-line collapse, and multi-line expansion. |
+| `TextMate3: Toggle Array Literal (%i/%w)` | `Ctrl+Cmd+\` | Toggles between `[:foo, :bar]` ↔ `%i( foo bar )` and `["foo", "bar"]` ↔ `%w( foo bar )`. Auto-detects symbol vs string content. |
 
 ### Source commands (active in any file)
 
 | Command | Keybinding | Description |
 | --- | --- | --- |
 | `TextMate3: Wrap in Braces` | — | Single-line selection → `{selection}`; multi-line selection → `{\n<indented content>\n}`. Respects editor tab settings. **Requires a selection.** |
-| `TextMate3: Unwrap Braces` | — | Removes surrounding `{…}` from a selection and unindents content by one level. **Requires a selection.** |
-| `TextMate3: Sort Collection` | — | Sorts items alphabetically (case-insensitive) in bracket arrays (`[:b, :a]`), `%i()`/`%w()` literals, or bare comma-separated text. **Requires a selection.** |
+| `TextMate3: Unwrap Braces` | — | Removes surrounding `{…}` and unindents content by one level. |
+| `TextMate3: Sort Collection` | — | Sorts items alphabetically (case-insensitive) in bracket arrays (`[:b, :a]`), `%i()`/`%w()` literals, or bare comma-separated text. |
 
 > **Note on Wrap / Unwrap keybindings:** The TextMate originals used bare `{` / `}` keys when text was selected. In VSCode this would intercept normal typing, so no default keybinding is declared. Add your own via **Preferences → Keyboard Shortcuts** if desired.
 

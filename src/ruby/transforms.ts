@@ -156,7 +156,7 @@ export function toggleCamelSnake(str: string): string {
 
 export function wrapInBraces(str: string, tabStr: string): string {
   if (!str.includes("\n")) {
-    return `{${str}}`;
+    return `(${str})`;
   }
 
   // Find minimum indentation of non-empty lines
@@ -292,7 +292,7 @@ export function sortCollection(str: string): string {
       sorted = bare;
     }
 
-    return `[ ${sorted.join(", ")} ]`;
+    return `[${sorted.join(", ")}]`;
   }
 
   // %i or %w word literal
@@ -306,7 +306,7 @@ export function sortCollection(str: string): string {
     const delimiter = isSymbol ? "%i" : "%w";
     const open = trimmed[2];
     const close = open === "(" ? ")" : open === "[" ? "]" : open === "<" ? ">" : open;
-    return `${delimiter}${open} ${items.join(" ")} ${close}`;
+    return `${delimiter}${open}${items.join(" ")}${close}`;
   }
 
   // Comma-separated fallback
@@ -351,7 +351,7 @@ export function toggleArrayLiteral(str: string): string {
       return `%i( ${content} )`;
     } else {
       // Strip any remaining quotes from content
-      return `%w( ${content.replace(/['"]/g, "")} )`;
+      return `%w(${content.replace(/['"]/g, "")})`;
     }
   }
 
@@ -375,7 +375,7 @@ export function toggleArrayLiteral(str: string): string {
       );
     }
 
-    return `[ ${items.join(", ")} ]`;
+    return `[${items.join(", ")}]`;
   }
 
   return str;

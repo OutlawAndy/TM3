@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.0.6 – 2026-05-13
+
+Remove padding inside braces.
+
+## 0.0.5 — 2026-05-13
+
+Transform commands now auto-detect their target scope at the cursor when no selection exists. Previously they fell back to the entire current line, which most transforms could not parse — so commands appeared to do nothing unless the user pre-selected the exact token.
+
+- Added grammar-aware scope detection using VSCode's `editor.action.smartSelect.expand`, iterated until the transform produces a change.
+- All transforms except `Wrap in Braces` now accept a bare cursor and find their own scope (word, string, hash, block, array, etc.).
+- Keybindings for `Toggle Block Style` and `Toggle Array Literal` no longer require `editorHasSelection`.
+
 ## 0.0.4 — 2026-05-13
 
 `TextMate3: Sort Collection` — alphabetically sorts the items in a selected collection, case-insensitively. Supports:
