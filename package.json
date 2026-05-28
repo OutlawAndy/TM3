@@ -2,7 +2,7 @@
   "name": "text-mate-3",
   "displayName": "TextMate3",
   "description": "Personal editor extension chassis: grammar tweaks, snippets, commands, and language features.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "outlawandy",
   "engines": {
     "vscode": "^1.85.0"
@@ -153,6 +153,13 @@
       {
         "language": "plaintext",
         "path": "./snippets/example.code-snippets"
+      }
+    ],
+    "themes": [
+      {
+        "label": "Spinel",
+        "uiTheme": "vs-dark",
+        "path": "./themes/spinel-color-theme.json"
       }
     ]
   },

@@ -11,6 +11,7 @@ Personal VSCode extension chassis. A long-lived home for grammar tweaks, snippet
 - **Command** — `TextMate3: Hello World` in the palette; reads the `textMate3.greeting` setting.
 - **Hover provider** — placeholder hover on any Markdown text.
 - **Custom macros** — record and replay editor actions à la TextMate2, plus named slots that persist across reloads. See [Macros](#macros) below.
+- **Color theme** — `Spinel`, a dark theme in [themes/spinel-color-theme.json](themes/spinel-color-theme.json). Select it via `Preferences: Color Theme`.
 
 ## Install
 
@@ -130,6 +131,7 @@ src/macros/                # macro recorder, player, storage, types
 src/ruby/                  # pure Ruby text-transform functions
 syntaxes/                  # TextMate grammars
 snippets/                  # snippet files
+themes/                    # color themes
 package.json               # manifest + contributions
 esbuild.config.mjs         # bundler
 ```

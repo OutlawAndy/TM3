@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.7 — 2026-05-27
+
+Added **Spinel**, a dark color theme, as a contributed theme (`themes/spinel-color-theme.json`). Select it via `Preferences: Color Theme`. Includes workbench colors, semantic token colors, and TextMate `tokenColors` tuned for Ruby, TypeScript/JavaScript, CSS, Markdown, Rust, C/C++, SQL, YAML, and diffs.
+
 ## 0.0.6 – 2026-05-13
 
 Remove padding inside braces.
