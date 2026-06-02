@@ -7,8 +7,6 @@ import {
   toggleStringSymbol,
   toggleQuoteStyle,
   toggleCamelSnake,
-  wrapInBraces,
-  unwrapBraces,
   toggleBlockStyle,
   toggleArrayLiteral,
   sortCollection,
@@ -19,7 +17,7 @@ let storage: MacroStorage | null = null;
 let statusBarItem: vscode.StatusBarItem | null = null;
 
 function readRecorderConfig(): RecorderConfig {
-  const cfg = vscode.workspace.getConfiguration("textMate3.macros");
+  const cfg = vscode.workspace.getConfiguration("tm3.macros");
   return {
     maxEvents: cfg.get<number>("maxEvents", 10000),
     filterMouseSelection: cfg.get<boolean>("filterMouseSelection", true),
@@ -32,7 +30,7 @@ function showRecordingIndicator(): void {
   }
   statusBarItem.text = "$(record) Recording macro";
   statusBarItem.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
-  statusBarItem.tooltip = "TextMate3 macro recording in progress";
+  statusBarItem.tooltip = "TM3 macro recording in progress";
   statusBarItem.show();
 }
 
@@ -95,16 +93,16 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(statusBarItem);
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("textMate3.helloWorld", () => {
+    vscode.commands.registerCommand("tm3.helloWorld", () => {
       const greeting = vscode.workspace
-        .getConfiguration("textMate3")
+        .getConfiguration("tm3")
         .get<string>("greeting", "Hello");
-      void vscode.window.showInformationMessage(`${greeting} from TextMate3!`);
+      void vscode.window.showInformationMessage(`${greeting} from TM3!`);
     }),
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("textMate3.macros.toggleRecord", () => {
+    vscode.commands.registerCommand("tm3.macros.toggleRecord", () => {
       if (currentRecorder) {
         finishRecording("toggle");
       } else {
@@ -114,7 +112,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("textMate3.macros.replay", async () => {
+    vscode.commands.registerCommand("tm3.macros.replay", async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         void vscode.window.showInformationMessage("Open a text editor to replay a macro.");
@@ -152,7 +150,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("textMate3.macros.saveAs", async () => {
+    vscode.commands.registerCommand("tm3.macros.saveAs", async () => {
       if (!storage) {
         return;
       }
@@ -189,7 +187,7 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("textMate3.macros.loadNamed", async () => {
+    vscode.commands.registerCommand("tm3.macros.loadNamed", async () => {
       if (!storage) {
         return;
       }
@@ -316,52 +314,52 @@ export function activate(context: vscode.ExtensionContext): void {
   }
 
   // Selection-or-line commands (R1–R4)
-  registerTransform("textMate3.ruby.toggleHashSyntax", (t) =>
+  registerTransform("tm3.ruby.toggleHashSyntax", (t) =>
     toggleHashSyntax(t),
   );
-  registerTransform("textMate3.ruby.toggleStringSymbol", (t) =>
+  registerTransform("tm3.ruby.toggleStringSymbol", (t) =>
     toggleStringSymbol(t),
   );
-  registerTransform("textMate3.ruby.toggleQuoteStyle", (t) =>
+  registerTransform("tm3.ruby.toggleQuoteStyle", (t) =>
     toggleQuoteStyle(t),
   );
-  registerTransform("textMate3.ruby.toggleCamelSnake", (t) =>
+  registerTransform("tm3.ruby.toggleCamelSnake", (t) =>
     toggleCamelSnake(t),
   );
 
   // wrapInBraces still requires a selection — there's nothing meaningful to wrap otherwise.
   registerTransform(
-    "textMate3.source.wrapInBraces",
+    "tm3.source.wrapInBraces",
     (t, tab) => wrapInBraces(t, tab),
     true,
   );
-  registerTransform("textMate3.source.unwrapBraces", (t, tab) =>
+  registerTransform("tm3.source.unwrapBraces", (t, tab) =>
     unwrapBraces(t, tab),
   );
-  registerTransform("textMate3.ruby.toggleBlockStyle", (t, tab) =>
+  registerTransform("tm3.ruby.toggleBlockStyle", (t, tab) =>
     toggleBlockStyle(t, tab),
   );
-  registerTransform("textMate3.ruby.toggleArrayLiteral", (t) =>
+  registerTransform("tm3.ruby.toggleArrayLiteral", (t) =>
     toggleArrayLiteral(t),
   );
-  registerTransform("textMate3.source.sortCollection", (t) =>
+  registerTransform("tm3.source.sortCollection", (t) =>
     sortCollection(t),
   );
 
-  context.subscriptions.push(
-    vscode.languages.registerHoverProvider(
-      { language: "markdown" },
-      {
-        provideHover() {
-          return new vscode.Hover(
-            new vscode.MarkdownString(
-              "**TextMate3** hover stub — replace me with a real provider.",
-            ),
-          );
-        },
-      },
-    ),
-  );
+  // context.subscriptions.push(
+  //   vscode.languages.registerHoverProvider(
+  //     { language: "markdown" },
+  //     {
+  //       provideHover() {
+  //         return new vscode.Hover(
+  //           new vscode.MarkdownString(
+  //             "**TM3** hover stub — replace me with a real provider.",
+  //           ),
+  //         );
+  //       },
+  //     },
+  //   ),
+  // );
 }
 
 export function deactivate(): void {

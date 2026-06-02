@@ -1,30 +1,31 @@
-# TextMate3
+# TM3
 
 Personal VSCode extension chassis. A long-lived home for grammar tweaks, snippets, custom commands, and small language features. The repo ships with one trivial example of each so adding the next tweak is a small diff, not a fresh project.
 
-**Extension ID:** `outlawandy.text-mate-3`
+**Extension ID:** `outlawandy.tm3`
 
 ## What's in the box
 
 - **Injection grammar** — highlights `TODO`, `FIXME`, `NOTE`, `HACK`, `XXX` inside Markdown.
-- **Snippet** — type `hello` in Markdown or plaintext to expand "Hello, world!".
-- **Command** — `TextMate3: Hello World` in the palette; reads the `textMate3.greeting` setting.
+- **Snippet** — comming soon...
+- **Command** — TODO: list commands.
 - **Hover provider** — placeholder hover on any Markdown text.
 - **Custom macros** — record and replay editor actions à la TextMate2, plus named slots that persist across reloads. See [Macros](#macros) below.
+- **Whitespace keybindings** — `space` trims the current selection; `shift+space` trims and prepends one space. See [Whitespace keybindings](#whitespace-keybindings) below.
 - **Color theme** — `Spinel`, a dark theme in [themes/spinel-color-theme.json](themes/spinel-color-theme.json). Select it via `Preferences: Color Theme`.
 
 ## Install
 
 ```bash
 npm ci
-npm run package         # produces text-mate-3-0.0.5.vsix
-code --install-extension text-mate-3-0.0.5.vsix
+npm run package         # produces tm3-0.0.5.vsix
+code --install-extension tm3-0.0.5.vsix
 ```
 
 To remove:
 
 ```bash
-code --uninstall-extension outlawandy.text-mate-3
+code --uninstall-extension outlawandy.tm3
 ```
 
 ## Develop
@@ -70,7 +71,7 @@ See the `HoverProvider` registration in [src/extension.ts](src/extension.ts).
 
 ### Settings
 
-Read at runtime with `vscode.workspace.getConfiguration("textMate3").get<T>("key", default)`. Declare new settings under `contributes.configuration.properties` in [package.json](package.json) so they appear in the Settings UI and pick up types and defaults.
+Read at runtime with `vscode.workspace.getConfiguration("tm3").get<T>("key", default)`. Declare new settings under `contributes.configuration.properties` in [package.json](package.json) so they appear in the Settings UI and pick up types and defaults.
 
 ## Ruby & Source text transforms
 
@@ -80,22 +81,35 @@ Text-manipulation commands ported from the TextMate Ruby and Source bundles. All
 
 | Command | Keybinding | Description |
 | --- | --- | --- |
-| `TextMate3: Toggle Ruby Hash Syntax` | — | Cycles between rocket (`{ :key => val }`) and new (`{ key: val }`) hash syntax. |
-| `TextMate3: Toggle String/Symbol` | — | Converts `"word"` / `'word'` ↔ `:word`; replaces all matches in the selection. |
-| `TextMate3: Toggle Quote Style` | `Ctrl+"` | Three-way cycle: `"…"` → `'…'` → `%Q{…}` → `"…"`. Also handles esoteric `%q`, `%Q[]`, backtick, and `%x{}` forms with proper escape/unescape. |
-| `TextMate3: Toggle camelCase / snake_case` | — | Three-way case cycle: `PascalCase` → `snake_case` → `camelCase` → `PascalCase`. Preserves leading non-letter prefix (e.g. `:`). |
-| `TextMate3: Toggle Block Style (do…end / { })` | `Ctrl+Shift+[` | Toggles a Ruby block between brace and keyword forms. Handles block parameters (`\|x\|`), single-line collapse, and multi-line expansion. |
-| `TextMate3: Toggle Array Literal (%i/%w)` | `Ctrl+Cmd+\` | Toggles between `[:foo, :bar]` ↔ `%i( foo bar )` and `["foo", "bar"]` ↔ `%w( foo bar )`. Auto-detects symbol vs string content. |
+| `TM3: Toggle Ruby Hash Syntax` | — | Cycles between rocket (`{ :key => val }`) and new (`{ key: val }`) hash syntax. |
+| `TM3: Toggle String/Symbol` | — | Converts `"word"` / `'word'` ↔ `:word`; replaces all matches in the selection. |
+| `TM3: Toggle Quote Style` | `Ctrl+"` | Three-way cycle: `"…"` → `'…'` → `%Q{…}` → `"…"`. Also handles esoteric `%q`, `%Q[]`, backtick, and `%x{}` forms with proper escape/unescape. |
+| `TM3: Toggle camelCase / snake_case` | — | Three-way case cycle: `PascalCase` → `snake_case` → `camelCase` → `PascalCase`. Preserves leading non-letter prefix (e.g. `:`). |
+| `TM3: Toggle Block Style (do…end / { })` | `Ctrl+Shift+[` | Toggles a Ruby block between brace and keyword forms. Handles block parameters (`\|x\|`), single-line collapse, and multi-line expansion. |
+| `TM3: Toggle Array Literal (%i/%w)` | `Ctrl+Cmd+\` | Toggles between `[:foo, :bar]` ↔ `%i( foo bar )` and `["foo", "bar"]` ↔ `%w( foo bar )`. Auto-detects symbol vs string content. |
 
 ### Source commands (active in any file)
 
 | Command | Keybinding | Description |
 | --- | --- | --- |
-| `TextMate3: Wrap in Braces` | — | Single-line selection → `{selection}`; multi-line selection → `{\n<indented content>\n}`. Respects editor tab settings. **Requires a selection.** |
-| `TextMate3: Unwrap Braces` | — | Removes surrounding `{…}` and unindents content by one level. |
-| `TextMate3: Sort Collection` | — | Sorts items alphabetically (case-insensitive) in bracket arrays (`[:b, :a]`), `%i()`/`%w()` literals, or bare comma-separated text. |
+| `TM3: Wrap in Braces` | — | Single-line selection → `{selection}`; multi-line selection → `{\n<indented content>\n}`. Respects editor tab settings. **Requires a selection.** |
+| `TM3: Unwrap Braces` | — | Removes surrounding `{…}` and unindents content by one level. |
+| `TM3: Sort Collection` | — | Sorts items alphabetically (case-insensitive) in bracket arrays (`[:b, :a]`), `%i()`/`%w()` literals, or bare comma-separated text. |
 
 > **Note on Wrap / Unwrap keybindings:** The TextMate originals used bare `{` / `}` keys when text was selected. In VSCode this would intercept normal typing, so no default keybinding is declared. Add your own via **Preferences → Keyboard Shortcuts** if desired.
+
+## Whitespace keybindings
+
+Two keybindings normalize the surrounding whitespace of the **current selection**. They fire only when text is selected in a writable editor (`editorTextFocus && !editorReadonly && editorHasSelection`), so plain typing is unaffected when nothing is selected.
+
+| Key | Result |
+| --- | --- |
+| `space` | Trims leading and trailing whitespace — including newlines and tabs — from the selection. |
+| `shift+space` | Same trim, then prepends a single space. |
+
+Each binds the built-in `editor.action.insertSnippet` with an inline `${TM_SELECTED_TEXT/…}` transform, so there is no extension command to register. The transform anchors with `^` / `$` because VSCode's snippet engine runs V8 (JavaScript) regex — the Oniguruma `\A` / `\Z` anchors are treated as the literal letters "A"/"Z" there and silently turn the transform into a no-op.
+
+> **Heads up:** `space` is rebound whenever a selection exists, so pressing it replaces the selection with the trimmed text rather than a literal space. That is intentional for this workflow; remove the entries from `contributes.keybindings` if you prefer the default behavior. A copy-paste version for a personal `keybindings.json` lives in [docs/whitespace-trim.keybindings.jsonc](docs/whitespace-trim.keybindings.jsonc).
 
 ## Macros
 
@@ -105,10 +119,10 @@ A TextMate2-style record/replay feature with persistent named slots.
 
 | Command | Default keybinding | What it does |
 | --- | --- | --- |
-| `TextMate3: Toggle Macro Recording` | `Cmd+Option+M` | Starts recording on first press, stops on second. Status bar shows `● Recording macro` while active. |
-| `TextMate3: Replay Last Macro` | `Cmd+Shift+M` | Replays the current macro at the cursor as a single undoable edit. |
-| `TextMate3: Save Current Macro As…` | — | Prompts for a name and persists the current macro under it. Confirms before overwriting. |
-| `TextMate3: Load Named Macro…` | — | Quickpick of saved macros; copies the chosen one into the current slot so replay plays it. |
+| `TM3: Toggle Macro Recording` | `Cmd+Option+M` | Starts recording on first press, stops on second. Status bar shows `● Recording macro` while active. |
+| `TM3: Replay Last Macro` | `Cmd+Shift+M` | Replays the current macro at the cursor as a single undoable edit. |
+| `TM3: Save Current Macro As…` | — | Prompts for a name and persists the current macro under it. Confirms before overwriting. |
+| `TM3: Load Named Macro…` | — | Quickpick of saved macros; copies the chosen one into the current slot so replay plays it. |
 
 ### Persistence
 
@@ -119,8 +133,8 @@ The current macro and all named macros are stored in VSCode's `globalState` (per
 - Captures everything that affects the **active text editor**: typed characters, command-driven edits, paste, cut. Switching editors mid-recording auto-stops with a warning.
 - Replay is **positional, not semantic**: it replays the same character changes at translated offsets, not the same commands. "Delete word right" recorded against one position replays as removing the same characters elsewhere.
 - Out-of-bounds replay edits (when the recorded offsets fall outside the target document) are skipped with a warning rather than crashing.
-- Mouse-driven selection changes are dropped from recordings by default. Toggle via the `textMate3.macros.filterMouseSelection` setting.
-- Recording auto-stops at `textMate3.macros.maxEvents` (default 10,000) to bound memory use.
+- Mouse-driven selection changes are dropped from recordings by default. Toggle via the `tm3.macros.filterMouseSelection` setting.
+- Recording auto-stops at `tm3.macros.maxEvents` (default 10,000) to bound memory use.
 - No multi-cursor recording, no cross-document safety check on replay, and no management UI for named macros yet.
 
 ## Repo layout
@@ -138,6 +152,6 @@ esbuild.config.mjs         # bundler
 
 ## Notes
 
-- `publisher` (`outlawandy`) and extension `name` (`text-mate-3`) are sticky once published. Don't change them casually.
+- `publisher` (`outlawandy`) and extension `name` (`tm3`) are sticky once published. Don't change them casually.
 - No test suite yet. Verification is manual via the F5 dev host plus a clean install/uninstall loop.
 - Built `.vsix` artifacts are gitignored.

@@ -1,0 +1,32 @@
+// Whitespace trim / normalize keybindings
+//
+// These are SHIPPED with the extension via `contributes.keybindings` in
+// package.json — installing TM3 activates them automatically. This file
+// is a readable reference and a copy-paste source for a personal
+// keybindings.json (Preferences → Keyboard Shortcuts → Open Keyboard Shortcuts (JSON)).
+//
+// Behavior (only fires when text is selected, in a writable editor):
+//   space        → trim leading/trailing whitespace (incl. newlines & tabs) from the selection
+//   shift+space  → same trim, then prepend a single space
+//
+// The transform uses VSCode's snippet engine, which runs JS (V8) regex. Use
+// `^` / `$` for start/end anchors — NOT `\A` / `\Z`, which V8 treats as the
+// literal letters "A"/"Z", silently turning the transform into a no-op.
+[
+  {
+    "key": "space",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus && !editorReadonly && editorHasSelection",
+    "args": {
+      "snippet": "${TM_SELECTED_TEXT/^\\s*([\\s\\S]*?)\\s*$/$1/}"
+    }
+  },
+  {
+    "key": "shift+space",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus && !editorReadonly && editorHasSelection",
+    "args": {
+      "snippet": "${TM_SELECTED_TEXT/^\\s*([\\s\\S]*?)\\s*$/ $1/}"
+    }
+  }
+]

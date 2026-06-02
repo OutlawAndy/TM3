@@ -1,8 +1,8 @@
 {
-  "name": "text-mate-3",
-  "displayName": "TextMate3",
+  "name": "tm3",
+  "displayName": "TM3",
   "description": "Personal editor extension chassis: grammar tweaks, snippets, commands, and language features.",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "publisher": "outlawandy",
   "engines": {
     "vscode": "^1.85.0"
@@ -17,119 +17,120 @@
   "contributes": {
     "commands": [
       {
-        "command": "textMate3.helloWorld",
-        "title": "TextMate3: Hello World",
-        "category": "TextMate3"
+        "command": "tm3.macros.toggleRecord",
+        "title": "TM3: Toggle Macro Recording",
+        "category": "TM3"
       },
       {
-        "command": "textMate3.macros.toggleRecord",
-        "title": "TextMate3: Toggle Macro Recording",
-        "category": "TextMate3"
+        "command": "tm3.macros.replay",
+        "title": "TM3: Replay Last Macro",
+        "category": "TM3"
       },
       {
-        "command": "textMate3.macros.replay",
-        "title": "TextMate3: Replay Last Macro",
-        "category": "TextMate3"
+        "command": "tm3.macros.saveAs",
+        "title": "TM3: Save Current Macro As…",
+        "category": "TM3"
       },
       {
-        "command": "textMate3.macros.saveAs",
-        "title": "TextMate3: Save Current Macro As…",
-        "category": "TextMate3"
+        "command": "tm3.macros.loadNamed",
+        "title": "TM3: Load Named Macro…",
+        "category": "TM3"
       },
       {
-        "command": "textMate3.macros.loadNamed",
-        "title": "TextMate3: Load Named Macro…",
-        "category": "TextMate3"
+        "command": "tm3.ruby.toggleHashSyntax",
+        "title": "TM3: Toggle Ruby Hash Syntax",
+        "category": "TM3"
       },
       {
-        "command": "textMate3.ruby.toggleHashSyntax",
-        "title": "TextMate3: Toggle Ruby Hash Syntax",
-        "category": "TextMate3"
+        "command": "tm3.ruby.toggleStringSymbol",
+        "title": "TM3: Toggle String/Symbol",
+        "category": "TM3"
       },
       {
-        "command": "textMate3.ruby.toggleStringSymbol",
-        "title": "TextMate3: Toggle String/Symbol",
-        "category": "TextMate3"
+        "command": "tm3.ruby.toggleQuoteStyle",
+        "title": "TM3: Toggle Quote Style",
+        "category": "TM3"
       },
       {
-        "command": "textMate3.ruby.toggleQuoteStyle",
-        "title": "TextMate3: Toggle Quote Style",
-        "category": "TextMate3"
+        "command": "tm3.ruby.toggleCamelSnake",
+        "title": "TM3: Toggle camelCase / snake_case",
+        "category": "TM3"
       },
       {
-        "command": "textMate3.ruby.toggleCamelSnake",
-        "title": "TextMate3: Toggle camelCase / snake_case",
-        "category": "TextMate3"
+        "command": "tm3.ruby.toggleBlockStyle",
+        "title": "TM3: Toggle Block Style (do…end / { })",
+        "category": "TM3"
       },
       {
-        "command": "textMate3.source.wrapInBraces",
-        "title": "TextMate3: Wrap in Braces",
-        "category": "TextMate3"
+        "command": "tm3.ruby.toggleArrayLiteral",
+        "title": "TM3: Toggle Array Literal (%i/%w)",
+        "category": "TM3"
       },
       {
-        "command": "textMate3.source.unwrapBraces",
-        "title": "TextMate3: Unwrap Braces",
-        "category": "TextMate3"
-      },
-      {
-        "command": "textMate3.ruby.toggleBlockStyle",
-        "title": "TextMate3: Toggle Block Style (do…end / { })",
-        "category": "TextMate3"
-      },
-      {
-        "command": "textMate3.ruby.toggleArrayLiteral",
-        "title": "TextMate3: Toggle Array Literal (%i/%w)",
-        "category": "TextMate3"
-      },
-      {
-        "command": "textMate3.source.sortCollection",
-        "title": "TextMate3: Sort Collection",
-        "category": "TextMate3"
+        "command": "tm3.source.sortCollection",
+        "title": "TM3: Sort Collection",
+        "category": "TM3"
       }
     ],
     "keybindings": [
       {
-        "command": "textMate3.macros.toggleRecord",
+        "command": "tm3.macros.toggleRecord",
         "key": "cmd+alt+m",
         "when": "editorTextFocus"
       },
       {
-        "command": "textMate3.macros.replay",
+        "command": "tm3.macros.replay",
         "key": "cmd+shift+m",
         "when": "editorTextFocus"
       },
       {
-        "command": "textMate3.ruby.toggleQuoteStyle",
+        "command": "tm3.ruby.toggleQuoteStyle",
         "key": "ctrl+\"",
         "when": "editorTextFocus && editorLangId == 'ruby'"
       },
       {
-        "command": "textMate3.ruby.toggleBlockStyle",
+        "command": "tm3.ruby.toggleBlockStyle",
         "key": "ctrl+shift+[",
         "when": "editorTextFocus && editorLangId == 'ruby'"
       },
       {
-        "command": "textMate3.ruby.toggleArrayLiteral",
+        "command": "tm3.ruby.toggleArrayLiteral",
         "key": "ctrl+cmd+\\",
         "when": "editorTextFocus && editorLangId == 'ruby'"
+      },
+      {
+        "command": "editor.action.insertSnippet",
+        "key": "space",
+        "when": "editorTextFocus && !editorReadonly && editorHasSelection",
+        "args": {
+          "snippet": "${TM_SELECTED_TEXT/^\\s*([\\s\\S]*?)\\s*$/$1/}"
+        }
+      },
+      {
+        "command": "editor.action.insertSnippet",
+        "key": "shift+space",
+        "when": "editorTextFocus && !editorReadonly && editorHasSelection",
+        "args": {
+          "snippet": "${TM_SELECTED_TEXT/^\\s*([\\s\\S]*?)\\s*$/ $1/}"
+        }
       }
     ],
     "configuration": {
-      "title": "TextMate3",
+      "title": "TM3",
       "properties": {
-        "textMate3.greeting": {
+        "tm3.greeting": {
           "type": "string",
           "default": "Hello",
-          "description": "Greeting used by the TextMate3: Hello World command."
+          "description": "Greeting used by the TM3: Hello World command."
         },
-        "textMate3.macros.maxEvents": {
+        "tm3.macros.maxEvents": {
           "type": "number",
           "default": 10000,
           "minimum": 100,
           "maximum": 100000,
           "description": "Maximum number of recorded events before macro recording auto-stops."
         },
-        "textMate3.macros.filterMouseSelection": {
+        "tm3.macros.filterMouseSelection": {
           "type": "boolean",
           "default": true,
           "description": "Drop mouse-driven selection changes from macro recordings."
@@ -143,16 +144,6 @@
         "injectTo": [
           "text.html.markdown"
         ]
-      }
-    ],
-    "snippets": [
-      {
-        "language": "markdown",
-        "path": "./snippets/example.code-snippets"
-      },
-      {
-        "language": "plaintext",
-        "path": "./snippets/example.code-snippets"
       }
     ],
     "themes": [

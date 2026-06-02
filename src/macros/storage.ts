@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { PersistedMacro, MACRO_SCHEMA_VERSION } from "./types";
 
-const KEY_CURRENT = "textMate3.macros.current";
-const KEY_NAMED = "textMate3.macros.named";
+const KEY_CURRENT = "tm3.macros.current";
+const KEY_NAMED = "tm3.macros.named";
 
 type NamedMap = Record<string, PersistedMacro>;
 
@@ -54,13 +54,13 @@ export class MacroStorage {
     }
     if (raw.version !== MACRO_SCHEMA_VERSION) {
       void vscode.window.showWarningMessage(
-        `TextMate3: stored macro "${label}" has unsupported version ${raw.version}; ignoring.`,
+        `TM3: stored macro "${label}" has unsupported version ${raw.version}; ignoring.`,
       );
       return null;
     }
     if (!Array.isArray(raw.events) || typeof raw.anchorOffset !== "number") {
       void vscode.window.showWarningMessage(
-        `TextMate3: stored macro "${label}" is malformed; ignoring.`,
+        `TM3: stored macro "${label}" is malformed; ignoring.`,
       );
       return null;
     }

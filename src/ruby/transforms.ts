@@ -149,59 +149,7 @@ export function toggleCamelSnake(str: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// R5 — Wrap in braces
-// Ported from TextMate Source bundle: Wrap in Braces.tmCommand
-// tabStr: the indentation unit (e.g. "  " for 2-space, "\t" for tabs)
-// ---------------------------------------------------------------------------
-
-export function wrapInBraces(str: string, tabStr: string): string {
-  if (!str.includes("\n")) {
-    return `(${str})`;
-  }
-
-  // Find minimum indentation of non-empty lines
-  const lines = str.split("\n");
-  const indents = lines
-    .filter((l) => l.trim().length > 0)
-    .map((l) => l.match(/^(\s*)/)?.[1] ?? "");
-  const leading = indents.reduce((min, ind) =>
-    ind.length < min.length ? ind : min,
-  );
-
-  if (lines.length === 1) {
-    // Single logical line but content has leading whitespace
-    const stripped = leading.slice(tabStr.length);
-    return `${stripped}{\n${str}${stripped}}\n`;
-  }
-
-  // Multi-line: indent each line by one tab, wrap with braces
-  const indented = str.replace(/^(?=.)/gm, tabStr);
-  return `${leading}{\n${indented}${leading}}\n`;
-}
-
-// ---------------------------------------------------------------------------
-// R6 — Unwrap braces
-// Ported from TextMate Source bundle: Unwrap Braces.tmCommand
-// ---------------------------------------------------------------------------
-
-export function unwrapBraces(str: string, tabStr: string): string {
-  const m = str.match(/^\s*\{\s*\n([\s\S]*\n)\s*\}\s*$/);
-  if (!m) return str;
-
-  const inner = m[1];
-  // Strip one level of indentation from multi-line inner content
-  if (/\n.*\n/.test(inner)) {
-    return inner.replace(new RegExp(`^${escapeRegex(tabStr)}`, "gm"), "");
-  }
-  return inner;
-}
-
-function escapeRegex(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-// ---------------------------------------------------------------------------
-// R7 — Ruby block style toggle: { … } ↔ do … end
+// R5 — Ruby block style toggle: { … } ↔ do … end
 // Operates on the selected block text.
 // Handles block parameters (|x|), single-line collapse, multi-line expansion.
 // ---------------------------------------------------------------------------
@@ -256,7 +204,7 @@ export function toggleBlockStyle(str: string, tabStr: string = "  "): string {
 }
 
 // ---------------------------------------------------------------------------
-// R9 — Sort collection alphabetically (case-insensitive)
+// R6 — Sort collection alphabetically (case-insensitive)
 // Handles: bracket array literals, %i/%w word literals, comma-separated text.
 // ---------------------------------------------------------------------------
 
@@ -264,10 +212,12 @@ export function sortCollection(str: string): string {
   const trimmed = str.trim();
 
   // Bracket array: [ :foo, :bar ] or [ "foo", "bar" ]
-  if (trimmed.startsWith("[")) {
-    const m = trimmed.match(/^\[([\s\S]*)\]$/);
+  if (trimmed.startsWith("[") || trimmed.startsWith("(") || trimmed.startsWith("{")) {
+    const m = trimmed.match(/^(.)([\s\S]*)(.)$/);
     if (!m) return str;
-    const inner = m[1];
+    const open = m[1];
+    const inner = m[2];
+    const close = m[3];
     const items = inner
       .split(",")
       .map((s) => s.trim())
@@ -292,7 +242,7 @@ export function sortCollection(str: string): string {
       sorted = bare;
     }
 
-    return `[${sorted.join(", ")}]`;
+    return `${open}${sorted.join(", ")}${close}`;
   }
 
   // %i or %w word literal
@@ -305,24 +255,33 @@ export function sortCollection(str: string): string {
     items.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
     const delimiter = isSymbol ? "%i" : "%w";
     const open = trimmed[2];
-    const close = open === "(" ? ")" : open === "[" ? "]" : open === "<" ? ">" : open;
+    const close = open === "(" ? ")" : open === "[" ? "]" : open === "<" ? ">" : open === "{" ? "}" : open;
     return `${delimiter}${open}${items.join(" ")}${close}`;
   }
 
-  // Comma-separated fallback
-  if (str.includes(",")) {
-    const items = str.split(",").map((s) => s.trim()).filter(Boolean);
-    items.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
-    return items.join(", ");
+  // Comma/space/newline-separated fallback
+  let indent = "";
+  let separator = "";
+  let items: string[] = [];
+
+  if (str.includes("\n")) {
+    separator = "\n"
+    indent = str.match(/^(\s*)\S/m)?.[1] ?? "";
+    items = str.split("\n").map((s) => s.trim()).filter(Boolean);
+  } else if (str.includes(" ")) {
+    separator = " ";
+    items = str.split(" ").map((s) => s.trim()).filter(Boolean);
+  } else if (str.includes(",")) {
+    separator = ", ";
+    items = str.split(",").map((s) => s.trim()).filter(Boolean);
   }
 
-  return str;
+  return indent + items.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" })).join(separator);
 }
 
 // ---------------------------------------------------------------------------
-// R8 — Array literal toggle: [ :foo, :bar ] ↔ %i( foo bar )
-//                             [ "foo", "bar" ] ↔ %w( foo bar )
-// Ported from TextMate Rangular bundle: %i( syms ).tmCommand
+// R7 — Array literal toggle: [:foo, :bar]   ↔ %i[foo bar]
+//                            ["foo", "bar"] ↔ %w[foo bar]
 // ---------------------------------------------------------------------------
 
 export function toggleArrayLiteral(str: string): string {
@@ -348,10 +307,10 @@ export function toggleArrayLiteral(str: string): string {
 
     const content = rows.join("\n");
     if (hasSymbols) {
-      return `%i( ${content} )`;
+      return `%i[${content}]`;
     } else {
       // Strip any remaining quotes from content
-      return `%w(${content.replace(/['"]/g, "")})`;
+      return `%w[${content.replace(/['"]/g, "")}]`;
     }
   }
 
