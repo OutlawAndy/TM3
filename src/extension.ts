@@ -326,16 +326,6 @@ export function activate(context: vscode.ExtensionContext): void {
   registerTransform("tm3.ruby.toggleCamelSnake", (t) =>
     toggleCamelSnake(t),
   );
-
-  // wrapInBraces still requires a selection — there's nothing meaningful to wrap otherwise.
-  registerTransform(
-    "tm3.source.wrapInBraces",
-    (t, tab) => wrapInBraces(t, tab),
-    true,
-  );
-  registerTransform("tm3.source.unwrapBraces", (t, tab) =>
-    unwrapBraces(t, tab),
-  );
   registerTransform("tm3.ruby.toggleBlockStyle", (t, tab) =>
     toggleBlockStyle(t, tab),
   );
