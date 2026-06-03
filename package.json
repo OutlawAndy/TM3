@@ -70,6 +70,11 @@
         "command": "tm3.source.sortCollection",
         "title": "TM3: Sort Collection",
         "category": "TM3"
+      },
+      {
+        "command": "tm3.ascii.toggleBoxDrawing",
+        "title": "TM3: Toggle ASCII/Unicode Box Drawing",
+        "category": "TM3"
       }
     ],
     "keybindings": [
@@ -97,6 +102,11 @@
         "command": "tm3.ruby.toggleArrayLiteral",
         "key": "ctrl+cmd+\\",
         "when": "editorTextFocus && editorLangId == 'ruby'"
+      },
+      {
+        "command": "tm3.ascii.toggleBoxDrawing",
+        "key": "ctrl+cmd+b",
+        "when": "editorTextFocus && editorHasSelection"
       },
       {
         "command": "editor.action.insertSnippet",
@@ -159,7 +169,9 @@
     "watch": "node esbuild.config.mjs --watch",
     "package": "npm run build && vsce package --allow-missing-repository --no-rewrite-relative-links",
     "vscode:prepublish": "npm run build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typecheck:test": "tsc -p tsconfig.test.json",
+    "test": "node --import tsx --test \"test/**/*.test.ts\""
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
