@@ -53,10 +53,25 @@ for cross-editor reuse (Neovim/JetBrains) at the cost of an out-of-process hop.
 ## How to try it
 
 1. `npm ci && npm run build`
-2. Set `tm3.inline.apiKey` (or export `ANTHROPIC_API_KEY`) and flip
-   `tm3.inline.enabled` to `true`.
+2. Flip `tm3.inline.enabled` to `true`, then pick a backend:
+   - **Hosted Anthropic:** set `tm3.inline.apiKey` (or export `ANTHROPIC_API_KEY`).
+     Leave `tm3.inline.baseUrl` empty.
+   - **Local OpenAI-compatible server (e.g. MLX):** set `tm3.inline.baseUrl` to
+     the server's `/v1` URL (e.g. `http://localhost:10240/v1`), set
+     `tm3.inline.model` to the model your server serves, and `export
+     MLX_API_KEY=local` (any non-empty placeholder — pi-ai needs *some* key to
+     mark the provider configured; most local servers ignore the value).
 3. **F5** to launch the Extension Development Host, open any file, and type —
    ghost text appears after the debounce; **Tab** accepts.
+
+### Local-server wiring (how it connects)
+
+A local MLX server speaks the OpenAI `/v1/chat/completions` protocol, so the
+engine builds a one-model `openai-completions` provider via pi-ai's
+`createProvider({ baseUrl, ... })` and looks the model up under a synthetic
+provider id. No language server, no Anthropic dependency — switching backends is
+purely the `tm3.inline.baseUrl` setting. See `src/inline/engine.ts`
+(`localProvider`).
 
 ## Reflections / what the PoC is *not*
 

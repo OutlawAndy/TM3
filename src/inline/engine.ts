@@ -7,10 +7,16 @@
 
 import {
   createModels,
+  createProvider,
+  envApiKeyAuth,
   type Context,
+  type Model,
   type MutableModels,
 } from "@earendil-works/pi-ai";
 import { anthropicProvider } from "@earendil-works/pi-ai/providers/anthropic";
+import { openAICompletionsApi } from "@earendil-works/pi-ai/api/openai-completions.lazy";
+
+const LOCAL_PROVIDER_ID = "local-openai";
 
 export interface CompletionRequest {
   /** Text before the cursor (already windowed to a budget). */
@@ -22,25 +28,73 @@ export interface CompletionRequest {
 }
 
 export interface EngineConfig {
-  /** pi-ai model id, e.g. "claude-haiku-4-5". */
+  /** pi-ai model id, e.g. "claude-haiku-4-5", or the model name your local server serves. */
   model: string;
   maxTokens: number;
   temperature: number;
-  /** Optional explicit key; when empty, pi-ai falls back to ANTHROPIC_API_KEY. */
+  /**
+   * When set, talk to an OpenAI-compatible server at this base URL (e.g. a local
+   * MLX server's `http://localhost:PORT/v1`) instead of Anthropic. Leave empty
+   * for hosted Anthropic.
+   */
+  baseUrl?: string;
+  /** Token context window to advertise for the local model. */
+  contextWindow?: number;
+  /**
+   * Explicit API key. For Anthropic, empty falls back to ANTHROPIC_API_KEY. For
+   * a local server, empty falls back to MLX_API_KEY / OPENAI_API_KEY (most local
+   * servers ignore the value, but pi-ai needs *some* key to consider the
+   * provider configured — any non-empty placeholder works).
+   */
   apiKey?: string;
 }
 
-// `createModels()` builds a provider registry; we register Anthropic once and
-// reuse it across requests. Lazy so we don't touch the SDK until the feature is
-// actually used.
+// `createModels()` builds a provider registry. We cache one registry per
+// distinct backend signature so toggling the baseUrl setting rebuilds cleanly.
 let models: MutableModels | null = null;
+let modelsSignature = "";
 
-function getModels(): MutableModels {
-  if (!models) {
+function backendSignature(cfg: EngineConfig): string {
+  return cfg.baseUrl ? `local:${cfg.baseUrl}:${cfg.model}` : "anthropic";
+}
+
+// Build a one-model OpenAI-compatible provider pointed at a local server. Pi-ai
+// auto-detects most compat quirks from the baseUrl; we only declare the model.
+function localProvider(cfg: EngineConfig) {
+  const model: Model<"openai-completions"> = {
+    id: cfg.model,
+    name: cfg.model,
+    api: "openai-completions",
+    provider: LOCAL_PROVIDER_ID,
+    baseUrl: cfg.baseUrl!,
+    reasoning: false,
+    input: ["text"],
+    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+    contextWindow: cfg.contextWindow ?? 8192,
+    maxTokens: cfg.maxTokens,
+  };
+  return createProvider({
+    id: LOCAL_PROVIDER_ID,
+    name: "Local OpenAI-compatible server",
+    baseUrl: cfg.baseUrl,
+    auth: { apiKey: envApiKeyAuth("Local server", ["MLX_API_KEY", "OPENAI_API_KEY"]) },
+    models: [model],
+    api: openAICompletionsApi(),
+  });
+}
+
+function getModels(cfg: EngineConfig): MutableModels {
+  const sig = backendSignature(cfg);
+  if (!models || sig !== modelsSignature) {
     models = createModels();
-    models.setProvider(anthropicProvider());
+    models.setProvider(cfg.baseUrl ? localProvider(cfg) : anthropicProvider());
+    modelsSignature = sig;
   }
   return models;
+}
+
+function providerId(cfg: EngineConfig): string {
+  return cfg.baseUrl ? LOCAL_PROVIDER_ID : "anthropic";
 }
 
 const SYSTEM_PROMPT = [
@@ -81,11 +135,12 @@ export async function generateCompletion(
   req: CompletionRequest,
   cfg: EngineConfig,
 ): Promise<string> {
-  const m = getModels();
-  const model = m.getModel("anthropic", cfg.model);
+  const m = getModels(cfg);
+  const provider = providerId(cfg);
+  const model = m.getModel(provider, cfg.model);
   if (!model) {
     throw new Error(
-      `Unknown pi-ai model "${cfg.model}" for provider "anthropic".`,
+      `Unknown pi-ai model "${cfg.model}" for provider "${provider}".`,
     );
   }
 

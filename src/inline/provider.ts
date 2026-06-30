@@ -11,6 +11,8 @@ import { generateCompletion } from "./engine";
 interface InlineConfig {
   enabled: boolean;
   model: string;
+  baseUrl: string;
+  contextWindow: number;
   debounceMs: number;
   maxTokens: number;
   temperature: number;
@@ -24,6 +26,8 @@ function readConfig(): InlineConfig {
   return {
     enabled: cfg.get<boolean>("enabled", false),
     model: cfg.get<string>("model", "claude-haiku-4-5"),
+    baseUrl: cfg.get<string>("baseUrl", ""),
+    contextWindow: cfg.get<number>("contextWindow", 8192),
     debounceMs: cfg.get<number>("debounceMs", 300),
     maxTokens: cfg.get<number>("maxTokens", 256),
     temperature: cfg.get<number>("temperature", 0.1),
@@ -103,6 +107,8 @@ export function registerInlineCompletions(
           },
           {
             model: cfg.model,
+            baseUrl: cfg.baseUrl || undefined,
+            contextWindow: cfg.contextWindow,
             maxTokens: cfg.maxTokens,
             temperature: cfg.temperature,
             apiKey: cfg.apiKey || undefined,
