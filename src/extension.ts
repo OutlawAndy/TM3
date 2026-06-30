@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { Recorder, RecorderConfig } from "./macros/recorder";
 import { MacroStorage } from "./macros/storage";
 import { play } from "./macros/player";
+import { registerInlineCompletions } from "./inline/provider";
 import {
   toggleHashSyntax,
   toggleStringSymbol,
@@ -91,6 +92,10 @@ export function activate(context: vscode.ExtensionContext): void {
 
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   context.subscriptions.push(statusBarItem);
+
+  // Copilot-style inline (ghost-text) suggestions, backed by the Pi harness's
+  // unified LLM client. See src/inline/.
+  registerInlineCompletions(context);
 
   context.subscriptions.push(
     vscode.commands.registerCommand("tm3.helloWorld", () => {
