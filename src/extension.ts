@@ -11,6 +11,7 @@ import {
   toggleArrayLiteral,
   sortCollection,
 } from "./ruby/transforms";
+import { toggle as toggleBoxDrawing } from "./ascii/diagram";
 
 let currentRecorder: Recorder | null = null;
 let storage: MacroStorage | null = null;
@@ -334,6 +335,14 @@ export function activate(context: vscode.ExtensionContext): void {
   );
   registerTransform("tm3.source.sortCollection", (t) =>
     sortCollection(t),
+  );
+
+  // Selection-required: select an ASCII sketch in a comment and flip it
+  // between plain ASCII and Unicode box-drawing (and back).
+  registerTransform(
+    "tm3.ascii.toggleBoxDrawing",
+    (t) => toggleBoxDrawing(t),
+    true,
   );
 
   // context.subscriptions.push(
